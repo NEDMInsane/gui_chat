@@ -34,7 +34,8 @@ class GuiApplication(tk.Tk):
                                                         background='white', foreground='black',
                                                         takefocus=False, relief='sunken'
                                                         )
-        self.chat_window.insert(tk.END, 'First Line!!!\n')
+        if self.model is not None:
+            self.chat_window.insert(tk.END, self.model.send_to_model() + '\n\n')
         self.chat_window.configure(state='disabled')
         self.chat_window.grid(row=0, column=0, columnspan=3, padx=5, pady=5)
 
@@ -42,16 +43,14 @@ class GuiApplication(tk.Tk):
         self.user_entry = tk.scrolledtext.ScrolledText(self, height=10, width=75, wrap='word',
                                                        background='white', foreground='black',
                                                        takefocus=True, relief="sunken")
-        self.user_entry.configure()
         self.user_entry.grid(row=1, column=0, columnspan=3, padx=5, pady=(0,5))
-
         self.send_button = ttk.Button(self, text="Send", command=self.send_input)
         self.send_button.grid(row=1, column=3)
 
     def send_input(self):
         user_input = self.user_entry.get('1.0', tk.END)
         self.chat_window.config(state='normal')
-        self.chat_window.insert(tk.END, f'{user_input}')
+        self.chat_window.insert(tk.END, f'User: {user_input}\n')
         self.chat_window.yview(tk.END)
         self.user_entry.delete('1.0', tk.END)
         self.chat_window.config(state='disabled')
@@ -60,7 +59,7 @@ class GuiApplication(tk.Tk):
 
     def add_chat_text(self, message):
         self.chat_window.config(state='normal')
-        self.chat_window.insert(tk.END, message)
+        self.chat_window.insert(tk.END, message + '\n\n')
         self.chat_window.yview(tk.END)
         self.chat_window.config(state='disabled')
 

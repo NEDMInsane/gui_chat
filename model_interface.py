@@ -1,3 +1,4 @@
+import os
 import sys
 
 import ollama
@@ -19,7 +20,7 @@ class ModelInterface:
         self.INTERFACE_APP = 'ollama' #if you want to use vllm or something else?
 
         #Context Paths
-        self.PROMPT_PATHS = ['system-prompt']
+        self.PROMPT_PATHS = []
         self.ADDITIONAL_CONTEXT = []
         self.CURRENT_CONTEXT = [] # This will be a holder for all the context.
 
@@ -37,16 +38,33 @@ class ModelInterface:
         else:
             print(f'ERROR! {self.INTERFACE_APP} not supported') #maybe make this a logging level
             sys.exit()
+        self.populate_prompt_paths()
+        self.update_context()
 
-        for file_path in self.PROMPT_PATHS:
-            try:
-                with open(file=file_path, mode='r') as file:
-                    content = file.read()
-                    self.CURRENT_CONTEXT.append({'role': 'system', 'content': content})
-            except FileNotFoundError:
-                print(f'File not found at {file_path}')
-            except Exception as e:
-                print(f'Something went wrong. {e}')
+    def populate_prompt_paths(self):
+        for file_name in os.listdir(os.getcwd()):
+            if file_name.find('prompt') != -1:
+                self.PROMPT_PATHS.append(file_name)
+
+    def update_context(self, context=None):
+        if context is None:
+            if self.PROMPT_PATHS:
+                for file_path in self.PROMPT_PATHS:
+                    try:
+                        with open(file=file_path, mode='r') as file:
+                            content = file.read()
+                            self.CURRENT_CONTEXT.append({'role': 'system', 'content': content})
+                    except FileNotFoundError:
+                        print(f'File not found at {file_path}')
+                    except Exception as e:
+                        print(f'Something went wrong. {e}')
+            else:
+                self.CURRENT_CONTEXT.append({'role': 'system',
+                                             'content': 'Begin the conversation by asking the user what they would like to do, fulfil requests within your programming.'})
+                self.CURRENT_CONTEXT.append({'role': 'user',
+                                             'content': '[Start Conversation]'})
+        else:
+            self.CURRENT_CONTEXT.append({'role': 'system', 'content': context})
 
 
     def send_to_model(self, new_message=None):

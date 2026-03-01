@@ -1,3 +1,4 @@
 /system-prompt
+/system-prompt/*
 .idea
 .venv
