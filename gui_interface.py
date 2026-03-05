@@ -34,8 +34,9 @@ class GuiApplication(tk.Tk):
                                                         background='white', foreground='black',
                                                         takefocus=False, relief='sunken'
                                                         )
-        if self.model is not None:
-            self.chat_window.insert(tk.END, self.model.send_to_model() + '\n\n')
+        # Model will output garbage when user isn't the first to speak, could be fixed on the back end.
+        #if self.model is not None:
+        #    self.chat_window.insert(tk.END, self.model.send_to_model() + '\n\n')
         self.chat_window.configure(state='disabled')
         self.chat_window.grid(row=0, column=0, columnspan=3, padx=5, pady=5)
 
@@ -54,9 +55,8 @@ class GuiApplication(tk.Tk):
         self.chat_window.yview(tk.END)
         self.user_entry.delete('1.0', tk.END)
         self.chat_window.config(state='disabled')
-        # Model will output garbage responses is not interacted with at first, and causes issues.
-        #if self.model is not None:
-        #    self.add_chat_text(self.model.send_to_model(user_input))
+        if self.model is not None:
+            self.add_chat_text(self.model.send_to_model(user_input))
 
     def add_chat_text(self, message):
         self.chat_window.config(state='normal')
