@@ -54,8 +54,9 @@ class GuiApplication(tk.Tk):
         self.chat_window.yview(tk.END)
         self.user_entry.delete('1.0', tk.END)
         self.chat_window.config(state='disabled')
-        if self.model is not None:
-            self.add_chat_text(self.model.send_to_model(user_input))
+        # Model will output garbage responses is not interacted with at first, and causes issues.
+        #if self.model is not None:
+        #    self.add_chat_text(self.model.send_to_model(user_input))
 
     def add_chat_text(self, message):
         self.chat_window.config(state='normal')
