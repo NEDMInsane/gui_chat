@@ -2,10 +2,17 @@ import logging
 
 
 def read_conversation_file(file_path):
-    content = ''
+    columns = ''
+    content = []
     try:
         with open(file_path) as file:
-            return content('conversation')
+            columns = file.readline() # Throw away the columns?
+            for line in file:
+                if line.startswith('user'):
+                    content.append({'role': 'user', 'content': f'{line.removeprefix('user,').replace("\"", '').strip()}'})
+                if line.startswith('assistant'):
+                    content.append({'role': 'assistant', 'content': f'{line.removeprefix('assistant,').replace("\"", '').strip()}'})
+            return content
     except FileNotFoundError:
         logging.log(logging.ERROR, 'File not found')
         return None
